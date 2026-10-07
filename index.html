@@ -82,7 +82,7 @@ details.card > summary{font-size:17px;font-weight:750;cursor:pointer;padding:3px
 <section class="card">
  <div class="row"><h2 class="grow">Patient dashboard</h2>
  <select id="patient" onchange="render()"><option>Room 1</option><option>Room 2</option><option>Room 3</option><option>Room 4</option></select></div>
- <div id="hero"></div>
+ <div id="hero"></div><div id="ppCountdown"></div>
  <button class="deliver" onclick="delivered()">DELIVERED</button>
  <div class="tiny" style="margin-top:7px">Starts a 1-minute cord-delay countdown and postpartum recovery checks q30 min × 4 by default. Keep the app open to hear enabled alerts. Adjust to your current unit policy when needed.</div>
 </section>
@@ -386,6 +386,10 @@ function render(){
  [1,2,3].forEach(n=>{const entry=logs.find(x=>x.patient===patient()&&x.action==='Void '+n);document.getElementById('voidStatus'+n).textContent=entry?fmt(entry.ts)+' • '+entry.label:'';});
  const p=patient(), active=timers.filter(t=>t.patient===p&&!t.stopped).sort((a,b)=>nextFor(a)-nextFor(b)), now=Date.now();
  hero.innerHTML=active.length?`<div class="hero"><div class="label">NEXT FOR ${p.toUpperCase()}</div><div class="clock">${active[0].cordDelay&&now>=scheduledFor(active[0])?"1 minute complete":countdown(nextFor(active[0]))}</div><div class="task">${fmt(nextFor(active[0]))} • ${esc(bundlesFor(active)[0].map(t=>t.label).join(" + "))}</div></div>`:`<div class="empty">No active timers for ${p}.</div>`;
+
+ const ppTimer=active.find(t=>t.label==='Postpartum recovery check');
+ document.getElementById('ppCountdown').innerHTML=ppTimer&&active[0]!==ppTimer?
+ '<div class="hero" style="background:var(--rose-soft);color:var(--ink);border:1px solid var(--line)"><div class="label" style="color:var(--rose)">POSTPARTUM CHECK '+(ppTimer.done+1)+(ppTimer.count?' OF '+ppTimer.count:'')+' • '+p.toUpperCase()+'</div><div class="clock">'+countdown(nextFor(ppTimer))+'</div><div class="task" style="color:var(--ink)">Due '+fmt(nextFor(ppTimer))+' • Postpartum recovery check</div></div>':'';
  const eventRow=t=>{
  if(t.cordDelay){
   const complete=now>=scheduledFor(t);
