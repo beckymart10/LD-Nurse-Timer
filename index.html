@@ -58,13 +58,13 @@ button{font-weight:750;cursor:pointer}.primary{background:#111827;color:#fff;bor
 </section>
 
 <section class="card">
- <div class="row"><h2 class="grow">Shift timeline</h2><button class="soft" onclick="clearLog()">Clear log</button></div>
+ <div class="row"><h2 class="grow">Due-Time History</h2><button class="soft" onclick="clearLog()">Clear Shift</button></div>
  <div id="log"></div>
 </section>
 
 <section class="card">
  <h2>Safety</h2>
- <div class="tiny">This prototype is a personal workflow/reminder aid, not a medical device or substitute for clinical assessment. Presets do not establish the correct monitoring frequency. Requirements can change with maternal/fetal condition, medications, labor stage, orders, and facility policy. Follow current hospital policy, provider orders, and clinical judgment. Never delay assessment or intervention because a timer is not due. Do not enter patient identifiers.</div>
+ <div class="tiny">This prototype is a personal workflow/reminder aid, not a medical device or substitute for clinical assessment. Presets do not establish the correct monitoring frequency. Requirements can change with maternal/fetal condition, medications, labor stage, orders, and facility policy. Follow current hospital policy, provider orders, and clinical judgment. Never delay assessment or intervention because a timer is not due. Due-Time History records reminder times only; it does not prove an assessment was performed. Verify the actual fetal tracing/EHR and chart according to policy. Do not enter patient identifiers.</div>
 </section>
 </main>
 <div class="footer">L&D Nurse Timer • data stays in this browser/device unless you export or share it</div>
@@ -82,11 +82,16 @@ button{font-weight:750;cursor:pointer}.primary{background:#111827;color:#fff;bor
 let currentLabel="";
 let timers=JSON.parse(localStorage.getItem("ld2Timers")||"[]");
 let logs=JSON.parse(localStorage.getItem("ld2Logs")||"[]");
+let history=JSON.parse(localStorage.getItem("ldDueHistory")||"[]");
 const patient=()=>document.getElementById("patient").value;
 const z=n=>String(n).padStart(2,"0");
 function localDT(d=new Date()){return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
 function fmt(ms){return new Date(ms).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}
-function save(){localStorage.setItem("ld2Timers",JSON.stringify(timers));localStorage.setItem("ld2Logs",JSON.stringify(logs))}
+function save(){
+ localStorage.setItem("ld2Timers",JSON.stringify(timers));
+ localStorage.setItem("ld2Logs",JSON.stringify(logs));
+ localStorage.setItem("ldDueHistory",JSON.stringify(history));
+}
 function log(action,label,p=patient()){logs.unshift({ts:Date.now(),patient:p,action,label});logs=logs.slice(0,150);save()}
 function openPreset(label,mins,count){
  currentLabel=label;modalTitle.textContent=label;start.value=localDT();interval.value=mins;document.getElementById("count").value=count;modal.classList.add("show")
@@ -95,19 +100,38 @@ function closeModal(){modal.classList.remove("show")}
 function addTimer(){
  const st=new Date(start.value).getTime(), mins=Math.max(1,+interval.value), c=Math.max(0,+document.getElementById("count").value);
  if(!st){alert("Choose a start time.");return}
- timers.push({id:Date.now()+Math.random(),patient:patient(),label:currentLabel,start:st,interval:mins*60000,count:c,done:0,stopped:false,snoozeUntil:null});
+ const nt={id:Date.now()+Math.random(),patient:patient(),label:currentLabel,start:st,interval:mins*60000,count:c,done:0,stopped:false,snoozeUntil:null};
+ timers.push(nt);ensureHistory(nt);
  log("Started",currentLabel);closeModal();render()
 }
-function nextFor(t){return t.snoozeUntil||t.start+t.interval*(t.done+1)}
+function scheduledFor(t){return t.start+t.interval*(t.done+1)}
+function nextFor(t){return t.snoozeUntil||scheduledFor(t)}
+function ensureHistory(t){
+ const due=scheduledFor(t);
+ let h=history.find(x=>x.timerId===t.id&&x.due===due);
+ if(!h){
+  h={id:Date.now()+Math.random(),timerId:t.id,patient:t.patient,label:t.label,due:due,status:"Due",completedAt:null};
+  history.push(h);save();
+ }
+ return h;
+}
 function markDone(id){
  const t=timers.find(x=>x.id===id);if(!t)return;
- log("Completed",t.label,t.patient);t.done++;t.snoozeUntil=null;if(t.count>0&&t.done>=t.count){t.stopped=true;log("Series complete",t.label,t.patient)}save();render()
+ const h=ensureHistory(t);h.status="Completed";h.completedAt=Date.now();
+ log("Completed",t.label,t.patient);t.done++;t.snoozeUntil=null;
+ if(t.count>0&&t.done>=t.count){t.stopped=true;log("Series complete",t.label,t.patient)}
+ else ensureHistory(t);
+ save();render()
 }
 function snooze(id){
  const t=timers.find(x=>x.id===id);if(!t)return;t.snoozeUntil=Date.now()+5*60000;log("Snoozed 5 min",t.label,t.patient);save();render()
 }
 function notNeeded(id){
- const t=timers.find(x=>x.id===id);if(!t)return;log("Marked not needed",t.label,t.patient);t.done++;t.snoozeUntil=null;if(t.count>0&&t.done>=t.count)t.stopped=true;save();render()
+ const t=timers.find(x=>x.id===id);if(!t)return;
+ const h=ensureHistory(t);h.status="N/A";h.completedAt=Date.now();
+ log("Marked not needed",t.label,t.patient);t.done++;t.snoozeUntil=null;
+ if(t.count>0&&t.done>=t.count)t.stopped=true;else ensureHistory(t);
+ save();render()
 }
 function stopTimer(id){
  const t=timers.find(x=>x.id===id);if(!t)return;t.stopped=true;log("Stopped",t.label,t.patient);save();render()
@@ -116,10 +140,18 @@ function delivered(){
  const p=patient(), now=Date.now();
  if(!confirm(`Start postpartum recovery for ${p} now?`))return;
  timers.filter(t=>t.patient===p&&!t.stopped).forEach(t=>t.stopped=true);
- timers.push({id:Date.now()+Math.random(),patient:p,label:"Postpartum recovery check",start:now,interval:30*60000,count:4,done:0,stopped:false,snoozeUntil:null});
+ const pp={id:Date.now()+Math.random(),patient:p,label:"Postpartum recovery check",start:now,interval:30*60000,count:4,done:0,stopped:false,snoozeUntil:null};
+ timers.push(pp);ensureHistory(pp);
  log("DELIVERED — postpartum recovery started","q30 min × 4",p);save();render()
 }
-function clearLog(){if(confirm("Clear the completed shift timeline?")){logs=[];save();render()}}
+function clearLog(){
+ const p=patient();
+ if(confirm(`Clear ALL shift history for ${p}? Only do this after your shift is finished.`)){
+  logs=logs.filter(x=>x.patient!==p);
+  history=history.filter(x=>x.patient!==p);
+  save();render();
+ }
+}
 function countdown(ms){
  const d=ms-Date.now();if(d<=0)return `${Math.max(0,Math.floor(-d/60000))}m OVERDUE`;
  const m=Math.floor(d/60000),s=Math.floor((d%60000)/1000);return `${m}:${String(s).padStart(2,"0")}`
@@ -131,8 +163,14 @@ function render(){
   const due=nextFor(t),d=due-now,cls=d<0?"late":d<10*60000?"due":"",status=d<0?`${Math.ceil(-d/60000)} min overdue`:d<60000?"due now":`in ${Math.ceil(d/60000)} min`;
   return `<div class="event ${cls}"><div><div class="time">${fmt(due)}</div><div><span class="badge">${t.patient}</span><b>${t.label}</b></div><div class="meta">${status} • ${t.count?t.done+"/"+t.count+" completed":t.done+" completed • ongoing"}</div></div><div class="actions"><button class="primary" onclick="markDone(${t.id})">DONE</button><button onclick="snooze(${t.id})">+5</button><button onclick="notNeeded(${t.id})">N/A</button><button class="danger" onclick="stopTimer(${t.id})">Stop</button></div></div>`
  }).join(""):`<div class="empty">Start a workflow above.</div>`;
- const plogs=logs.filter(x=>x.patient===p);
- document.getElementById("log").innerHTML=plogs.length?plogs.slice(0,30).map(x=>`<div class="log"><b>${fmt(x.ts)}</b> • ${x.action} — ${x.label}</div>`).join(""):`<div class="empty">Nothing completed yet.</div>`;
+ active.forEach(t=>ensureHistory(t));
+ const ph=history.filter(x=>x.patient===p).sort((a,b)=>a.due-b.due);
+ document.getElementById("log").innerHTML=ph.length?ph.slice(-80).map(x=>{
+   let status=x.status;
+   if(status==="Due" && Date.now()>x.due) status="MISSED / OVERDUE";
+   const actual=x.completedAt?` • Completed at <b>${fmt(x.completedAt)}</b>`:"";
+   return `<div class="log"><b>${fmt(x.due)}</b> due • ${x.label}<br><span class="meta">${status}${actual}</span></div>`;
+ }).join(""):`<div class="empty">No due-time history yet.</div>`;
 }
 render();setInterval(render,1000);
 </script>
