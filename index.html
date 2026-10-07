@@ -107,7 +107,7 @@ button:active{transform:scale(.98)}
  <h2>Quick Events</h2>
  <div class="grid">
   <button onclick="quickEvent('Foley removed')">Foley Out<div class="meta">time-stamp event</div></button>
-  <button onclick="quickEvent('Provider in room')">Dr. in Room<div class="meta">time-stamp event</div></button>
+
   <button onclick="pitChange(2)">Pitocin +2<div class="meta">increase 2 mU/min</div></button>
   <button onclick="pitChange(-2)">Pitocin −2<div class="meta">decrease 2 mU/min</div></button>
   <button onclick="pitStatus('Paused')">Pitocin Pause<div class="meta">time-stamp + note</div></button>
@@ -115,6 +115,18 @@ button:active{transform:scale(.98)}
   <button onclick="pitStatus('Stopped')">Pitocin Stop<div class="meta">time-stamp + note</div></button>
   <button onclick="addNote()">Add Note<div class="meta">generic shift note</div></button>
  </div>
+
+ <details class="provider-visits" style="margin-top:12px">
+  <summary style="cursor:pointer;font-weight:800;padding:12px;border-radius:14px;background:#fff0f5;border:1px solid #f3c6d5">👩‍⚕️ Provider Visits</summary>
+  <div class="grid" style="margin-top:10px">
+   <button onclick="providerVisit('Doctor','IN')">Doctor IN<div class="meta">time-stamp arrival</div></button>
+   <button onclick="providerVisit('Doctor','OUT')">Doctor OUT<div class="meta">time-stamp departure</div></button>
+   <button onclick="providerVisit('Anesthesia','IN')">Anesthesia IN<div class="meta">CRNA / anesthesiologist</div></button>
+   <button onclick="providerVisit('Anesthesia','OUT')">Anesthesia OUT<div class="meta">time-stamp departure</div></button>
+  </div>
+  <div class="tiny" style="margin-top:7px">Generic provider role only—do not enter provider or patient names.</div>
+ </details>
+
  <div class="row" style="margin-top:10px">
   <label class="tiny" for="pitRate"><b>Current Pitocin (mU/min)</b></label>
   <input id="pitRate" type="number" min="0" step="2" value="0" style="width:95px">
@@ -238,6 +250,13 @@ function clearLog(){
  }
 }
 
+function providerVisit(role,direction){
+ const label=`${role} ${direction}`;
+ const note=prompt(`${label} — optional note (no names/PHI):`,` `);
+ if(note===null)return;
+ logs.unshift({ts:Date.now(),patient:patient(),action:label,label:(note.trim()||"")});
+ save();render();
+}
 function quickEvent(label){
  const note=prompt(`${label} — optional note:`,` `);
  if(note===null)return;
