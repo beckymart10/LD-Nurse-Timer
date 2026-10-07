@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#111827">
+<title>L&D Nurse Timer</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#e5e7eb;--soft:#f3f4f6;--warn:#fff7ed;--late:#fef2f2;--ok:#ecfdf5}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+header{position:sticky;top:0;z-index:5;background:#111827;color:#fff;padding:calc(12px + env(safe-area-inset-top)) 15px 13px}
+header h1{margin:0;font-size:20px}header p{margin:4px 0 0;color:#d1d5db;font-size:11px}
+main{max-width:760px;margin:auto;padding:12px 12px 100px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:13px;margin-bottom:11px;box-shadow:0 2px 8px #00000008}
+h2{font-size:17px;margin:0 0 10px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}
+button,select,input{font:inherit;border:1px solid #d1d5db;border-radius:12px;padding:11px 12px;background:#fff;color:var(--ink)}
+button{font-weight:750;cursor:pointer}.primary{background:#111827;color:#fff;border-color:#111827}.soft{background:var(--soft)}.deliver{background:#7f1d1d;color:#fff;border-color:#7f1d1d;width:100%;font-size:17px;padding:14px}.danger{color:#b91c1c}.tiny{font-size:11px;color:var(--muted);line-height:1.4}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid button{text-align:left;min-height:58px}.meta{font-size:11px;color:var(--muted);font-weight:500;margin-top:3px}
+.hero{padding:15px;border-radius:15px;background:#111827;color:#fff;margin-bottom:10px}.hero .label{font-size:12px;color:#d1d5db}.hero .clock{font-size:34px;font-weight:850;letter-spacing:-1px}.hero .task{font-size:14px;margin-top:3px}
+.event{padding:11px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.event:first-child{border-top:0}.event.due{background:var(--warn);margin:0 -7px;padding:11px 7px;border-radius:12px}.event.late{background:var(--late);margin:0 -7px;padding:11px 7px;border-radius:12px}
+.time{font-size:20px;font-weight:850}.badge{display:inline-block;font-size:10px;padding:3px 7px;border-radius:999px;background:#eef2ff;margin-right:5px}.actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.actions button{padding:8px 9px;font-size:11px}
+.log{padding:8px 0;border-top:1px solid var(--line);font-size:12px}.log:first-child{border-top:0}.empty{text-align:center;color:var(--muted);padding:18px 5px}
+.footer{position:fixed;bottom:0;left:0;right:0;background:#ffffffee;backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:7px 12px calc(7px + env(safe-area-inset-bottom));text-align:center;font-size:10px;color:var(--muted)}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:20;padding:18px;align-items:flex-end}.modal.show{display:flex}.sheet{background:#fff;width:100%;max-width:760px;margin:auto;border-radius:20px;padding:16px}.sheet label{display:block;font-size:12px;font-weight:750;margin:10px 0 5px}.sheet input{width:100%}
+@media(min-width:620px){.grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>L&D Nurse Timer</h1><p>Workflow reminder • generic room slots only • no PHI</p></header>
+<main>
+<section class="card">
+ <div class="row"><h2 class="grow">Patient dashboard</h2>
+ <select id="patient" onchange="render()"><option>Room 1</option><option>Room 2</option><option>Room 3</option><option>Room 4</option></select></div>
+ <div id="hero"></div>
+ <button class="deliver" onclick="delivered()">DELIVERED</button>
+ <div class="tiny" style="margin-top:7px">Starts postpartum recovery checks q30 min × 4 by default. Adjust to your current unit policy when needed.</div>
+</section>
+
+<section class="card">
+ <h2>Start / change workflow</h2>
+ <div class="grid">
+  <button onclick="openPreset('Pitocin documentation',15,0)">Pitocin<div class="meta">q15 min ongoing</div></button>
+  <button onclick="openPreset('ROM temperature',120,0)">ROM / Temp<div class="meta">editable interval</div></button>
+  <button onclick="openPreset('Magnesium assessment',60,0)">Magnesium<div class="meta">editable interval</div></button>
+  <button onclick="openPreset('FHR — pushing',5,0)">Pushing FHR<div class="meta">q5 min preset</div></button>
+  <button onclick="openPreset('Postpartum recovery check',30,4)">PP Recovery<div class="meta">q30 min × 4</div></button>
+  <button onclick="openPreset('Epidural follow-up',15,1)">Epidural<div class="meta">editable</div></button>
+  <button onclick="openPreset('FHR / labor documentation',15,0)">Labor / FHR<div class="meta">editable</div></button>
+  <button onclick="openPreset('Maternal vital signs',30,0)">Maternal VS<div class="meta">editable</div></button>
+  <button onclick="openPreset('Custom task',30,1)">Custom<div class="meta">choose timing</div></button>
+ </div>
+</section>
+
+<section class="card">
+ <div class="row"><h2 class="grow">NEXT DUE</h2><button class="soft" onclick="render()">Refresh</button></div>
+ <div id="events"></div>
+</section>
+
+<section class="card">
+ <div class="row"><h2 class="grow">Shift timeline</h2><button class="soft" onclick="clearLog()">Clear log</button></div>
+ <div id="log"></div>
+</section>
+
+<section class="card">
+ <h2>Safety</h2>
+ <div class="tiny">This prototype is a personal workflow/reminder aid, not a medical device or substitute for clinical assessment. Presets do not establish the correct monitoring frequency. Requirements can change with maternal/fetal condition, medications, labor stage, orders, and facility policy. Follow current hospital policy, provider orders, and clinical judgment. Never delay assessment or intervention because a timer is not due. Do not enter patient identifiers.</div>
+</section>
+</main>
+<div class="footer">L&D Nurse Timer • data stays in this browser/device unless you export or share it</div>
+
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="sheet">
+ <h2 id="modalTitle">Add timer</h2>
+ <label>Start time</label><input id="start" type="datetime-local">
+ <label>Repeat every (minutes)</label><input id="interval" type="number" min="1">
+ <label>Number of checks</label><input id="count" type="number" min="0">
+ <div class="tiny" style="margin-top:5px">0 = ongoing until stopped.</div>
+ <div class="row" style="margin-top:14px"><button class="primary grow" onclick="addTimer()">Start timer</button><button onclick="closeModal()">Cancel</button></div>
+</div></div>
+
+<script>
+let currentLabel="";
+let timers=JSON.parse(localStorage.getItem("ld2Timers")||"[]");
+let logs=JSON.parse(localStorage.getItem("ld2Logs")||"[]");
+const patient=()=>document.getElementById("patient").value;
+const z=n=>String(n).padStart(2,"0");
+function localDT(d=new Date()){return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
+function fmt(ms){return new Date(ms).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}
+function save(){localStorage.setItem("ld2Timers",JSON.stringify(timers));localStorage.setItem("ld2Logs",JSON.stringify(logs))}
+function log(action,label,p=patient()){logs.unshift({ts:Date.now(),patient:p,action,label});logs=logs.slice(0,150);save()}
+function openPreset(label,mins,count){
+ currentLabel=label;modalTitle.textContent=label;start.value=localDT();interval.value=mins;document.getElementById("count").value=count;modal.classList.add("show")
+}
+function closeModal(){modal.classList.remove("show")}
+function addTimer(){
+ const st=new Date(start.value).getTime(), mins=Math.max(1,+interval.value), c=Math.max(0,+document.getElementById("count").value);
+ if(!st){alert("Choose a start time.");return}
+ timers.push({id:Date.now()+Math.random(),patient:patient(),label:currentLabel,start:st,interval:mins*60000,count:c,done:0,stopped:false,snoozeUntil:null});
+ log("Started",currentLabel);closeModal();render()
+}
+function nextFor(t){return t.snoozeUntil||t.start+t.interval*(t.done+1)}
+function markDone(id){
+ const t=timers.find(x=>x.id===id);if(!t)return;
+ log("Completed",t.label,t.patient);t.done++;t.snoozeUntil=null;if(t.count>0&&t.done>=t.count){t.stopped=true;log("Series complete",t.label,t.patient)}save();render()
+}
+function snooze(id){
+ const t=timers.find(x=>x.id===id);if(!t)return;t.snoozeUntil=Date.now()+5*60000;log("Snoozed 5 min",t.label,t.patient);save();render()
+}
+function notNeeded(id){
+ const t=timers.find(x=>x.id===id);if(!t)return;log("Marked not needed",t.label,t.patient);t.done++;t.snoozeUntil=null;if(t.count>0&&t.done>=t.count)t.stopped=true;save();render()
+}
+function stopTimer(id){
+ const t=timers.find(x=>x.id===id);if(!t)return;t.stopped=true;log("Stopped",t.label,t.patient);save();render()
+}
+function delivered(){
+ const p=patient(), now=Date.now();
+ if(!confirm(`Start postpartum recovery for ${p} now?`))return;
+ timers.filter(t=>t.patient===p&&!t.stopped).forEach(t=>t.stopped=true);
+ timers.push({id:Date.now()+Math.random(),patient:p,label:"Postpartum recovery check",start:now,interval:30*60000,count:4,done:0,stopped:false,snoozeUntil:null});
+ log("DELIVERED — postpartum recovery started","q30 min × 4",p);save();render()
+}
+function clearLog(){if(confirm("Clear the completed shift timeline?")){logs=[];save();render()}}
+function countdown(ms){
+ const d=ms-Date.now();if(d<=0)return `${Math.max(0,Math.floor(-d/60000))}m OVERDUE`;
+ const m=Math.floor(d/60000),s=Math.floor((d%60000)/1000);return `${m}:${String(s).padStart(2,"0")}`
+}
+function render(){
+ const p=patient(), active=timers.filter(t=>t.patient===p&&!t.stopped).sort((a,b)=>nextFor(a)-nextFor(b)), now=Date.now();
+ hero.innerHTML=active.length?`<div class="hero"><div class="label">NEXT FOR ${p.toUpperCase()}</div><div class="clock">${countdown(nextFor(active[0]))}</div><div class="task">${fmt(nextFor(active[0]))} • ${active[0].label}</div></div>`:`<div class="empty">No active timers for ${p}.</div>`;
+ events.innerHTML=active.length?active.map(t=>{
+  const due=nextFor(t),d=due-now,cls=d<0?"late":d<10*60000?"due":"",status=d<0?`${Math.ceil(-d/60000)} min overdue`:d<60000?"due now":`in ${Math.ceil(d/60000)} min`;
+  return `<div class="event ${cls}"><div><div class="time">${fmt(due)}</div><div><span class="badge">${t.patient}</span><b>${t.label}</b></div><div class="meta">${status} • ${t.count?t.done+"/"+t.count+" completed":t.done+" completed • ongoing"}</div></div><div class="actions"><button class="primary" onclick="markDone(${t.id})">DONE</button><button onclick="snooze(${t.id})">+5</button><button onclick="notNeeded(${t.id})">N/A</button><button class="danger" onclick="stopTimer(${t.id})">Stop</button></div></div>`
+ }).join(""):`<div class="empty">Start a workflow above.</div>`;
+ const plogs=logs.filter(x=>x.patient===p);
+ document.getElementById("log").innerHTML=plogs.length?plogs.slice(0,30).map(x=>`<div class="log"><b>${fmt(x.ts)}</b> • ${x.action} — ${x.label}</div>`).join(""):`<div class="empty">Nothing completed yet.</div>`;
+}
+render();setInterval(render,1000);
+</script>
+</body></html>
