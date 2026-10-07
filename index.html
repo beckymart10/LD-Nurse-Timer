@@ -6,28 +6,76 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#111827">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='38' fill='%23d85f88'/><path d='M20 94h28l10-25 17 54 17-78 18 60 12-28 10 17h28' fill='none' stroke='white' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/><circle cx='137' cy='137' r='25' fill='%23fff7fa'/><path d='M137 122v16l11 7' fill='none' stroke='%23b63e69' stroke-width='6' stroke-linecap='round'/><text x='22' y='40' font-family='Arial,sans-serif' font-size='26' font-weight='700' fill='white'>L&amp;D</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='38' fill='%23d85f88'/><path d='M20 94h28l10-25 17 54 17-78 18 60 12-28 10 17h28' fill='none' stroke='white' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/><circle cx='137' cy='137' r='25' fill='%23fff7fa'/><path d='M137 122v16l11 7' fill='none' stroke='%23b63e69' stroke-width='6' stroke-linecap='round'/><text x='22' y='40' font-family='Arial,sans-serif' font-size='26' font-weight='700' fill='white'>L&amp;D</text></svg>">
 <title>L&D Nurse Timer</title>
 <style>
-:root{--bg:#f5f7fb;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#e5e7eb;--soft:#f3f4f6;--warn:#fff7ed;--late:#fef2f2;--ok:#ecfdf5}
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
-header{position:sticky;top:0;z-index:5;background:#111827;color:#fff;padding:calc(12px + env(safe-area-inset-top)) 15px 13px}
-header h1{margin:0;font-size:20px}header p{margin:4px 0 0;color:#d1d5db;font-size:11px}
-main{max-width:760px;margin:auto;padding:12px 12px 100px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:13px;margin-bottom:11px;box-shadow:0 2px 8px #00000008}
-h2{font-size:17px;margin:0 0 10px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}
-button,select,input{font:inherit;border:1px solid #d1d5db;border-radius:12px;padding:11px 12px;background:#fff;color:var(--ink)}
-button{font-weight:750;cursor:pointer}.primary{background:#111827;color:#fff;border-color:#111827}.soft{background:var(--soft)}.deliver{background:#7f1d1d;color:#fff;border-color:#7f1d1d;width:100%;font-size:17px;padding:14px}.danger{color:#b91c1c}.tiny{font-size:11px;color:var(--muted);line-height:1.4}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid button{text-align:left;min-height:58px}.meta{font-size:11px;color:var(--muted);font-weight:500;margin-top:3px}
-.hero{padding:15px;border-radius:15px;background:#111827;color:#fff;margin-bottom:10px}.hero .label{font-size:12px;color:#d1d5db}.hero .clock{font-size:34px;font-weight:850;letter-spacing:-1px}.hero .task{font-size:14px;margin-top:3px}
-.event{padding:11px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.event:first-child{border-top:0}.event.due{background:var(--warn);margin:0 -7px;padding:11px 7px;border-radius:12px}.event.late{background:var(--late);margin:0 -7px;padding:11px 7px;border-radius:12px}
-.time{font-size:20px;font-weight:850}.badge{display:inline-block;font-size:10px;padding:3px 7px;border-radius:999px;background:#eef2ff;margin-right:5px}.actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.actions button{padding:8px 9px;font-size:11px}
-.log{padding:8px 0;border-top:1px solid var(--line);font-size:12px}.log:first-child{border-top:0}.empty{text-align:center;color:var(--muted);padding:18px 5px}
-.footer{position:fixed;bottom:0;left:0;right:0;background:#ffffffee;backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:7px 12px calc(7px + env(safe-area-inset-bottom));text-align:center;font-size:10px;color:var(--muted)}
-.modal{display:none;position:fixed;inset:0;background:#0008;z-index:20;padding:18px;align-items:flex-end}.modal.show{display:flex}.sheet{background:#fff;width:100%;max-width:760px;margin:auto;border-radius:20px;padding:16px}.sheet label{display:block;font-size:12px;font-weight:750;margin:10px 0 5px}.sheet input{width:100%}
+:root{
+ --bg:#fff5f8;--card:#fffdfd;--ink:#33252b;--muted:#806d75;--line:#f0dce4;
+ --rose:#c44773;--rose-soft:#fde8f0;--lav:#9a76a7;--lav-soft:#f6eaf5;
+ --blue:#a66f89;--blue-soft:#f8eaf0;--mint:#a36f83;--mint-soft:#f7e8ee;
+ --sand:#a56c7f;--sand-soft:#f9e9ef;--late:#fff0f1;--late-ink:#a62c3b;
+ --shadow:0 5px 18px rgba(31,36,48,.06)
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+header{
+ position:sticky;top:0;z-index:5;
+ background:linear-gradient(135deg,#fff9fb 0%,#fce6ee 55%,#f3dbe5 100%);
+ color:var(--ink);padding:calc(13px + env(safe-area-inset-top)) 16px 14px;
+ border-bottom:1px solid #efd8e1
+}
+header h1{margin:0;font-size:21px;letter-spacing:-.35px}
+header h1:before{content:"♡ ";color:var(--rose);font-size:24px}
+header p{margin:4px 0 0;color:var(--muted);font-size:11px}
+main{max-width:760px;margin:auto;padding:13px 12px 105px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+h2{font-size:17px;margin:0 0 10px;letter-spacing:-.2px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}
+button,select,input{font:inherit;border:1px solid #dcdbe1;border-radius:13px;padding:11px 12px;background:#fff;color:var(--ink)}
+button{font-weight:750;cursor:pointer;transition:transform .08s ease}
+button:active{transform:scale(.98)}
+.primary{background:#a9476b;color:#fff;border-color:#a9476b}
+.soft{background:#f5f4f7}
+.deliver{
+ background:linear-gradient(135deg,#b63e69,#d65f88);color:#fff;border:0;width:100%;
+ font-size:17px;padding:15px;border-radius:15px;box-shadow:0 5px 14px rgba(190,65,105,.18)
+}
+.danger{color:#b53a4b}.tiny{font-size:11px;color:var(--muted);line-height:1.45}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.grid button{text-align:left;min-height:66px;border:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.035)}
+.grid button:nth-child(1),.grid button:nth-child(5){background:var(--rose-soft);color:#81334f}
+.grid button:nth-child(2),.grid button:nth-child(7){background:var(--lav-soft);color:#59457f}
+.grid button:nth-child(3),.grid button:nth-child(6){background:var(--blue-soft);color:#3f6f8d}
+.grid button:nth-child(4),.grid button:nth-child(8){background:var(--mint-soft);color:#396e5d}
+.grid button:nth-child(9){background:var(--sand-soft);color:#815b31}
+.meta{font-size:11px;color:var(--muted);font-weight:500;margin-top:4px}
+.hero{
+ padding:16px;border-radius:17px;
+ background:linear-gradient(135deg,#9f3f62 0%,#c45b7f 100%);
+ color:#fff;margin-bottom:11px;box-shadow:0 6px 18px rgba(174,68,105,.18)
+}
+.hero .label{font-size:11px;color:#d9dce2;font-weight:700;letter-spacing:.7px}
+.hero .clock{font-size:36px;font-weight:850;letter-spacing:-1.3px}
+.hero .task{font-size:14px;margin-top:3px;color:#f4f5f7}
+.event{padding:12px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.event:first-child{border-top:0}
+.event.due{background:#fff8e9;margin:0 -8px;padding:12px 8px;border-radius:13px;border-left:4px solid #d99a37}
+.event.late{background:var(--late);margin:0 -8px;padding:12px 8px;border-radius:13px;border-left:4px solid #c74658}
+.time{font-size:21px;font-weight:850;letter-spacing:-.3px}
+.badge{display:inline-block;font-size:10px;padding:4px 8px;border-radius:999px;background:#f0eef4;margin-right:5px;color:#555c68}
+.actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.actions button{padding:8px 9px;font-size:11px}
+.log{padding:10px 0;border-top:1px solid var(--line);font-size:12px}.log:first-child{border-top:0}
+.empty{text-align:center;color:var(--muted);padding:19px 5px}
+.footer{position:fixed;bottom:0;left:0;right:0;background:#fff8fbed;backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:7px 12px calc(7px + env(safe-area-inset-bottom));text-align:center;font-size:10px;color:var(--muted)}
+.modal{display:none;position:fixed;inset:0;background:#25273399;z-index:20;padding:18px;align-items:flex-end}
+.modal.show{display:flex}.sheet{background:#fff;width:100%;max-width:760px;margin:auto;border-radius:22px;padding:17px;box-shadow:0 18px 50px rgba(0,0,0,.2)}
+.sheet label{display:block;font-size:12px;font-weight:750;margin:10px 0 5px}.sheet input{width:100%}
 @media(min-width:620px){.grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
-<header><h1>L&D Nurse Timer</h1><p>Workflow reminder • generic room slots only • no PHI</p></header>
+<header><h1>L&D Nurse Timer</h1><p>Stay on time. Focus on care. • Generic room slots only • No PHI</p></header>
 <main>
 <section class="card">
  <div class="row"><h2 class="grow">Patient dashboard</h2>
@@ -50,6 +98,35 @@ button{font-weight:750;cursor:pointer}.primary{background:#111827;color:#fff;bor
   <button onclick="openPreset('Maternal vital signs',30,0)">Maternal VS<div class="meta">editable</div></button>
   <button onclick="openPreset('Custom task',30,1)">Custom<div class="meta">choose timing</div></button>
  </div>
+</section>
+
+<section class="card">
+ <h2>Quick Events</h2>
+ <div class="grid">
+  <button onclick="quickEvent('Foley removed')">Foley Out<div class="meta">time-stamp event</div></button>
+  <button onclick="quickEvent('Provider in room')">Dr. in Room<div class="meta">time-stamp event</div></button>
+  <button onclick="pitChange(2)">Pitocin +2<div class="meta">increase 2 mU/min</div></button>
+  <button onclick="pitChange(-2)">Pitocin −2<div class="meta">decrease 2 mU/min</div></button>
+  <button onclick="pitStatus('Paused')">Pitocin Pause<div class="meta">time-stamp + note</div></button>
+  <button onclick="pitStatus('Restarted')">Pitocin Restart<div class="meta">time-stamp + note</div></button>
+  <button onclick="pitStatus('Stopped')">Pitocin Stop<div class="meta">time-stamp + note</div></button>
+  <button onclick="addNote()">Add Note<div class="meta">generic shift note</div></button>
+ </div>
+ <div class="row" style="margin-top:10px">
+  <label class="tiny" for="pitRate"><b>Current Pitocin (mU/min)</b></label>
+  <input id="pitRate" type="number" min="0" step="2" value="0" style="width:95px">
+ </div>
+ <div class="tiny" style="margin-top:7px">Pitocin controls are a documentation/reminder aid only. Verify the pump, active order, patient response, and unit policy before changing an infusion.</div>
+</section>
+
+<section class="card">
+ <h2>Alerts</h2>
+ <div class="row">
+  <button class="soft" id="soundBtn" onclick="toggleSound()">🔊 Sound: ON</button>
+  <button class="soft" id="vibeBtn" onclick="toggleVibe()">📳 Vibrate: ON</button>
+  <button class="soft" onclick="testAlert()">Test Alert</button>
+ </div>
+ <div class="tiny" style="margin-top:7px">Sound/vibration are best-effort while this web app is open. iPhone may limit vibration or background/locked-screen alerts.</div>
 </section>
 
 <section class="card">
@@ -83,6 +160,9 @@ let currentLabel="";
 let timers=JSON.parse(localStorage.getItem("ld2Timers")||"[]");
 let logs=JSON.parse(localStorage.getItem("ld2Logs")||"[]");
 let history=JSON.parse(localStorage.getItem("ldDueHistory")||"[]");
+let soundOn=JSON.parse(localStorage.getItem("ldSoundOn")??"true");
+let vibeOn=JSON.parse(localStorage.getItem("ldVibeOn")??"true");
+let alerted={};
 const patient=()=>document.getElementById("patient").value;
 const z=n=>String(n).padStart(2,"0");
 function localDT(d=new Date()){return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
@@ -91,6 +171,8 @@ function save(){
  localStorage.setItem("ld2Timers",JSON.stringify(timers));
  localStorage.setItem("ld2Logs",JSON.stringify(logs));
  localStorage.setItem("ldDueHistory",JSON.stringify(history));
+ localStorage.setItem("ldSoundOn",JSON.stringify(soundOn));
+ localStorage.setItem("ldVibeOn",JSON.stringify(vibeOn));
 }
 function log(action,label,p=patient()){logs.unshift({ts:Date.now(),patient:p,action,label});logs=logs.slice(0,150);save()}
 function openPreset(label,mins,count){
@@ -152,6 +234,62 @@ function clearLog(){
   save();render();
  }
 }
+
+function quickEvent(label){
+ const note=prompt(`${label} — optional note:`,` `);
+ if(note===null)return;
+ logs.unshift({ts:Date.now(),patient:patient(),action:label,label:(note.trim()||"")});
+ save();render();
+}
+function pitChange(delta){
+ const el=document.getElementById("pitRate");
+ let old=Math.max(0,Number(el.value)||0), next=Math.max(0,old+delta);
+ const note=prompt(`Pitocin ${old} → ${next} mU/min\nOptional note:`,` `);
+ if(note===null)return;
+ el.value=next;
+ logs.unshift({ts:Date.now(),patient:patient(),action:`Pitocin ${old} → ${next} mU/min`,label:(note.trim()||"")});
+ save();render();
+}
+function pitStatus(status){
+ const rate=Math.max(0,Number(document.getElementById("pitRate").value)||0);
+ const note=prompt(`Pitocin ${status} at ${rate} mU/min\nOptional note:`,` `);
+ if(note===null)return;
+ logs.unshift({ts:Date.now(),patient:patient(),action:`Pitocin ${status} — ${rate} mU/min`,label:(note.trim()||"")});
+ save();render();
+}
+function addNote(){
+ const note=prompt("Shift note (do not enter PHI):","");
+ if(!note)return;
+ logs.unshift({ts:Date.now(),patient:patient(),action:"Note",label:note.trim()});
+ save();render();
+}
+function toggleSound(){soundOn=!soundOn;save();updateAlertButtons()}
+function toggleVibe(){vibeOn=!vibeOn;save();updateAlertButtons()}
+function updateAlertButtons(){
+ const s=document.getElementById("soundBtn"),v=document.getElementById("vibeBtn");
+ if(s)s.textContent=`🔊 Sound: ${soundOn?"ON":"OFF"}`;
+ if(v)v.textContent=`📳 Vibrate: ${vibeOn?"ON":"OFF"}`;
+}
+function beep(){
+ if(!soundOn)return;
+ try{
+  const A=window.AudioContext||window.webkitAudioContext,ctx=new A(),o=ctx.createOscillator(),g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);o.frequency.value=880;g.gain.value=.12;o.start();
+  setTimeout(()=>{o.stop();ctx.close()},500);
+ }catch(e){}
+}
+function testAlert(){beep();if(vibeOn&&navigator.vibrate)navigator.vibrate([250,120,250])}
+function checkDueAlerts(){
+ const now=Date.now();
+ timers.filter(t=>!t.stopped).forEach(t=>{
+  const due=nextFor(t),key=t.id+"-"+scheduledFor(t);
+  if(now>=due && !alerted[key]){
+   alerted[key]=true;beep();
+   if(vibeOn&&navigator.vibrate)navigator.vibrate([250,120,250]);
+  }
+ });
+}
+
 function countdown(ms){
  const d=ms-Date.now();if(d<=0)return `${Math.max(0,Math.floor(-d/60000))}m OVERDUE`;
  const m=Math.floor(d/60000),s=Math.floor((d%60000)/1000);return `${m}:${String(s).padStart(2,"0")}`
@@ -165,13 +303,17 @@ function render(){
  }).join(""):`<div class="empty">Start a workflow above.</div>`;
  active.forEach(t=>ensureHistory(t));
  const ph=history.filter(x=>x.patient===p).sort((a,b)=>a.due-b.due);
- document.getElementById("log").innerHTML=ph.length?ph.slice(-80).map(x=>{
+ const plogs=logs.filter(x=>x.patient===p).slice(0,40);
+ const histHTML=ph.slice(-80).map(x=>{
    let status=x.status;
    if(status==="Due" && Date.now()>x.due) status="MISSED / OVERDUE";
    const actual=x.completedAt?` • Completed at <b>${fmt(x.completedAt)}</b>`:"";
    return `<div class="log"><b>${fmt(x.due)}</b> due • ${x.label}<br><span class="meta">${status}${actual}</span></div>`;
- }).join(""):`<div class="empty">No due-time history yet.</div>`;
+ }).join("");
+ const eventHTML=plogs.map(x=>`<div class="log"><b>${fmt(x.ts)}</b> • ${x.action}${x.label?`<br><span class="meta">${x.label}</span>`:""}</div>`).join("");
+ document.getElementById("log").innerHTML=(histHTML||eventHTML)?histHTML+eventHTML:`<div class="empty">No due-time history yet.</div>`;
+ updateAlertButtons();
 }
-render();setInterval(render,1000);
+render();setInterval(()=>{render();checkDueAlerts()},1000);
 </script>
 </body></html>
