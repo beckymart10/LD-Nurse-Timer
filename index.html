@@ -6,8 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#111827">
-<rect width='180' height='180' rx='38' fill='%23d85f88'/><path d='M20 94h28l10-25 17 54 17-78 18 60 12-28 10 17h28' fill='none' stroke='white' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/><circle cx='137' cy='137' r='25' fill='%23fff7fa'/><path d='M137 122v16l11 7' fill='none' stroke='%23b63e69' stroke-width='6' stroke-linecap='round'/><text x='22' y='40' font-family='Arial,sans-serif' font-size='26' font-weight='700' fill='white'>L&amp;D</text></svg>">
-<rect width='180' height='180' rx='38' fill='%23d85f88'/><path d='M20 94h28l10-25 17 54 17-78 18 60 12-28 10 17h28' fill='none' stroke='white' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/><circle cx='137' cy='137' r='25' fill='%23fff7fa'/><path d='M137 122v16l11 7' fill='none' stroke='%23b63e69' stroke-width='6' stroke-linecap='round'/><text x='22' y='40' font-family='Arial,sans-serif' font-size='26' font-weight='700' fill='white'>L&amp;D</text></svg>">
 <title>L&D Nurse Timer</title>
 <style>
 :root{
@@ -72,20 +70,21 @@ button:active{transform:scale(.98)}
 .modal.show{display:flex}.sheet{background:#fff;width:100%;max-width:760px;margin:auto;border-radius:22px;padding:17px;box-shadow:0 18px 50px rgba(0,0,0,.2)}
 .sheet label{display:block;font-size:12px;font-weight:750;margin:10px 0 5px}.sheet input{width:100%}
 @media(min-width:620px){.grid{grid-template-columns:repeat(3,1fr)}}
+details.card > summary{font-size:17px;font-weight:750;cursor:pointer;padding:3px 0}details.card[open] > summary{margin-bottom:12px}.bundle-note{margin:6px 0 12px}.bundle-title{font-weight:750;color:var(--rose)}.preset-input{width:90px}.bundle-items .event{border-top:1px solid var(--line)}button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--rose);outline-offset:3px}@media(max-width:420px){.event{grid-template-columns:1fr}.actions{justify-content:flex-start}.hero .clock{font-size:30px}}
 </style>
 
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
 </head>
 <body>
-<header><h1>L&D Nurse Timer</h1><p>Stay on time. Focus on care. • Generic room slots only • No PHI</p></header>
+<header><h1>L&D Nurse Timer</h1><p>PREVIEW • Stay on time. Focus on care. • Generic room slots only • No PHI</p></header>
 <main>
 <section class="card">
  <div class="row"><h2 class="grow">Patient dashboard</h2>
  <select id="patient" onchange="render()"><option>Room 1</option><option>Room 2</option><option>Room 3</option><option>Room 4</option></select></div>
  <div id="hero"></div>
  <button class="deliver" onclick="delivered()">DELIVERED</button>
- <div class="tiny" style="margin-top:7px">Starts postpartum recovery checks q30 min × 4 by default. Adjust to your current unit policy when needed.</div>
+ <div class="tiny" style="margin-top:7px">Starts a 1-minute cord-delay countdown and postpartum recovery checks q30 min × 4 by default. Keep the app open to hear enabled alerts. Adjust to your current unit policy when needed.</div>
 </section>
 
 <section class="card">
@@ -103,50 +102,50 @@ button:active{transform:scale(.98)}
  </div>
 </section>
 
-<section class="card">
- <h2>Quick Events</h2>
-
- <details style="margin-top:8px">
-  <summary style="cursor:pointer;font-weight:800;padding:12px;border-radius:14px;background:#fff0f5;border:1px solid #f3c6d5">🚽 Foley</summary>
-  <div class="grid" style="margin-top:10px">
-   <button onclick="quickEvent('Foley IN')">Foley IN<div class="meta">time-stamp insertion</div></button>
-   <button onclick="quickEvent('Foley OUT')">Foley OUT<div class="meta">time-stamp removal</div></button>
-  </div>
- </details>
-
- <details class="provider-visits" style="margin-top:10px">
-  <summary style="cursor:pointer;font-weight:800;padding:12px;border-radius:14px;background:#fff0f5;border:1px solid #f3c6d5">👩‍⚕️ Provider Visits</summary>
-  <div class="grid" style="margin-top:10px">
-   <button onclick="providerVisit('Doctor','IN')">Doctor IN<div class="meta">time-stamp arrival</div></button>
-   <button onclick="providerVisit('Doctor','OUT')">Doctor OUT<div class="meta">time-stamp departure</div></button>
-   <button onclick="providerVisit('Anesthesia','IN')">Anesthesia IN<div class="meta">CRNA / anesthesiologist</div></button>
-   <button onclick="providerVisit('Anesthesia','OUT')">Anesthesia OUT<div class="meta">time-stamp departure</div></button>
-  </div>
-  <div class="tiny" style="margin-top:7px">Generic provider role only—do not enter provider or patient names.</div>
- </details>
-
- <details style="margin-top:10px">
-  <summary style="cursor:pointer;font-weight:800;padding:12px;border-radius:14px;background:#fff0f5;border:1px solid #f3c6d5">💉 Pitocin</summary>
-  <div class="row" style="margin-top:10px">
-   <label class="tiny" for="pitRate"><b>Current rate (mU/min)</b></label>
-   <input id="pitRate" type="number" min="0" step="2" value="0" style="width:95px">
-  </div>
-  <div class="grid" style="margin-top:10px">
-   <button onclick="pitChange(2)">Pitocin +2<div class="meta">increase 2 mU/min</div></button>
-   <button onclick="pitChange(-2)">Pitocin −2<div class="meta">decrease 2 mU/min</div></button>
-   <button onclick="pitStatus('Paused')">Pause<div class="meta">time-stamp + note</div></button>
-   <button onclick="pitStatus('Restarted')">Restart<div class="meta">time-stamp + note</div></button>
-   <button onclick="pitStatus('Stopped')">Stop<div class="meta">time-stamp + note</div></button>
-  </div>
-  <div class="grid" style="margin-top:8px"><button onclick="stampBolus()">Pit Bolus — timestamp</button></div>
-  <div class="tiny" style="margin-top:7px">Workflow/documentation aid only. Verify the pump, active order, patient response, and unit policy before changing an infusion.</div>
- </details>
-
- <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:800;padding:12px;border-radius:14px;background:#fff0f5;border:1px solid #f3c6d5">💊 Pain Meds</summary><div class="grid" style="margin-top:10px"><button onclick="painGiven('PO',60)">PO Med Given — reassess 60 min</button><button onclick="painGiven('IV',30)">IV Med Given — reassess 30 min</button></div><div class="tiny">Editable workflow presets; follow orders and unit policy.</div></details>
+<details class="card"><summary>🚽 Foley</summary>
+ <div class="grid"><button onclick="quickEvent('Foley inserted')">Foley IN<div class="meta">time-stamp event</div></button><button onclick="quickEvent('Foley removed')">Foley OUT<div class="meta">time-stamp event</div></button></div>
+ <h3 style="font-size:14px;margin:16px 0 9px">Voids × 3</h3>
+ <div class="tiny" style="margin-bottom:9px">Amount is optional. Leave blank if not measured.</div>
+ <div class="row" style="margin-bottom:9px"><button onclick="recordVoid(1)">Void 1</button><label class="tiny" for="voidAmount1">Amount (mL, optional)</label><input id="voidAmount1" type="number" min="0" step="any" placeholder="mL" style="width:100px"><span class="tiny" id="voidStatus1" aria-live="polite"></span></div><div class="row" style="margin-bottom:9px"><button onclick="recordVoid(2)">Void 2</button><label class="tiny" for="voidAmount2">Amount (mL, optional)</label><input id="voidAmount2" type="number" min="0" step="any" placeholder="mL" style="width:100px"><span class="tiny" id="voidStatus2" aria-live="polite"></span></div><div class="row" style="margin-bottom:9px"><button onclick="recordVoid(3)">Void 3</button><label class="tiny" for="voidAmount3">Amount (mL, optional)</label><input id="voidAmount3" type="number" min="0" step="any" placeholder="mL" style="width:100px"><span class="tiny" id="voidStatus3" aria-live="polite"></span></div>
+</details>
+<details class="card"><summary>💉 Pitocin</summary>
+ <div class="row"><label class="tiny" for="pitRate"><b>Current Pitocin (mU/min)</b></label><input id="pitRate" type="number" min="0" step="2" value="0" style="width:95px" onchange="saveRate()"></div>
  <div class="grid" style="margin-top:10px">
-  <button onclick="addNote()">Add Note<div class="meta">generic shift note</div></button>
+ <button onclick="stampBolus()">Pit Bolus<div class="meta">timestamp only</div></button>
+ <button onclick="openPreset('Pitocin documentation',15,0)">Documentation<div class="meta">q15 min ongoing</div></button>
+ <button onclick="pitChange(2)">Pitocin +2<div class="meta">increase 2 mU/min</div></button>
+ <button onclick="pitChange(-2)">Pitocin −2<div class="meta">decrease 2 mU/min</div></button>
+ <button onclick="pitStatus('Paused')">Pitocin Pause<div class="meta">time-stamp + note</div></button>
+ <button onclick="pitStatus('Restarted')">Pitocin Restart<div class="meta">time-stamp + note</div></button>
+ <button onclick="pitStatus('Stopped')">Pitocin Stop<div class="meta">time-stamp + note</div></button></div>
+ <div class="tiny" style="margin-top:7px">Pitocin controls are a documentation/reminder aid only. Verify the pump, active order, patient response, and unit policy before changing an infusion. Pit Bolus records only “Pitocin Bolus” in this room’s history; it does not change a rate or reminder.</div>
+</details>
+<details class="card"><summary>👩‍⚕️ Provider Visits</summary>
+ <div class="row"><label for="providerEventAt">Event time (optional)</label><input id="providerEventAt" type="time" style="max-width:100%"></div>
+ <p class="tiny">Today's date is used automatically. Enter the actual event time, then tap a button below. Leave blank to use now. The time field clears after each recorded event.</p>
+ <div class="grid" style="margin-bottom:9px"><button onclick="providerEvent('Dr Called')">Dr Called<div class="meta">time-stamp call</div></button><button onclick="providerEvent('Anesthesia Called')">Anesthesia Called<div class="meta">time-stamp call</div></button></div>
+ <div class="grid"><button onclick="providerEvent('Provider in room',true)">Doctor IN</button><button onclick="providerEvent('Provider out of room',true)">Doctor OUT</button><button onclick="providerEvent('Anesthesia in room',true)">Anesthesia IN</button><button onclick="providerEvent('Anesthesia out of room',true)">Anesthesia OUT</button></div>
+ <h3 style="font-size:14px;margin:16px 0 9px">Anesthesia / epidural timestamps</h3>
+ <div class="grid">
+ <button onclick="providerStamp('Time Out')">Time Out<div class="meta">time-stamp event</div></button>
+ <button onclick="providerStamp('Cath In')">Cath In<div class="meta">epidural catheter timestamp</div></button>
+ <button onclick="providerStamp('Test Dose')">Test Dose<div class="meta">time-stamp event</div></button>
+ <button onclick="providerStamp('Loading Dose')">Loading Dose<div class="meta">time-stamp event</div></button>
+ <button onclick="providerStamp('Pump On')">Pump On<div class="meta">time-stamp event</div></button>
  </div>
-</section>
+ <div class="tiny" style="margin-top:7px">Generic provider role only—do not enter provider or patient names.</div>
+</details>
+<details class="card"><summary>💊 Pain Meds</summary>
+ <p class="tiny">Editable workflow presets, not universal policy. Set the reassessment interval to the active orders and your unit policy before recording a dose. Enter the actual time given, or leave blank to use now. Each dose creates its own one-time reassessment reminder from the time given.</p>
+ <div class="tiny" style="margin-bottom:9px">Today's date is used automatically for medication times.</div>
+ <div class="row" style="margin-bottom:9px"><label for="poGivenAt">PO time given (optional)</label><input id="poGivenAt" type="time" style="max-width:100%"></div>
+ <div class="row"><label for="poMinutes">PO reassessment (minutes)</label><input class="preset-input" id="poMinutes" type="number" min="1" step="1" value="60"></div>
+ <button style="margin:8px 0 14px" onclick="painMed('PO')">PO Med Given</button>
+ <div class="row" style="margin-bottom:9px"><label for="ivGivenAt">IV time given (optional)</label><input id="ivGivenAt" type="time" style="max-width:100%"></div>
+ <div class="row"><label for="ivMinutes">IV reassessment (minutes)</label><input class="preset-input" id="ivMinutes" type="number" min="1" step="1" value="30"></div>
+ <button style="margin-top:8px" onclick="painMed('IV')">IV Med Given</button>
+</details>
+<section class="card"><h2>Quick Events</h2><button onclick="addNote()">Add Note<div class="meta">generic shift note • no PHI</div></button></section>
 
 <section class="card">
  <h2>Alerts</h2>
@@ -160,11 +159,11 @@ button:active{transform:scale(.98)}
 
 <section class="card">
  <div class="row"><h2 class="grow">NEXT DUE</h2><button class="soft" onclick="render()">Refresh</button></div>
- <div id="events"></div>
+ <p class="tiny bundle-note">Reminders within 2 minutes are grouped at the earliest reminder. Every original due time stays unchanged. DONE BUNDLE records all listed reminders as completed now, including any completed early; use it only after completing each item. Individual controls remain available.</p><div id="events"></div>
 </section>
 
 <section class="card">
- <div class="row"><h2 class="grow">Due-Time History</h2><button class="soft" onclick="clearLog()">Clear Shift</button></div>
+ <div class="row"><h2 class="grow">History by Category</h2><button class="soft" onclick="clearLog()">Clear Shift</button></div>
  <div id="log"></div>
 </section>
 
@@ -173,7 +172,7 @@ button:active{transform:scale(.98)}
  <div class="tiny">This prototype is a personal workflow/reminder aid, not a medical device or substitute for clinical assessment. Presets do not establish the correct monitoring frequency. Requirements can change with maternal/fetal condition, medications, labor stage, orders, and facility policy. Follow current hospital policy, provider orders, and clinical judgment. Never delay assessment or intervention because a timer is not due. Due-Time History records reminder times only; it does not prove an assessment was performed. Verify the actual fetal tracing/EHR and chart according to policy. Do not enter patient identifiers.</div>
 </section>
 </main>
-<div class="footer">L&D Nurse Timer • data stays in this browser/device unless you export or share it</div>
+<div class="footer">L&D Nurse Timer • Preview • separate browser storage • no PHI</div>
 
 <div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="sheet">
  <h2 id="modalTitle">Add timer</h2>
@@ -186,22 +185,72 @@ button:active{transform:scale(.98)}
 
 <script>
 let currentLabel="";
-let timers=JSON.parse(localStorage.getItem("ld2Timers")||"[]");
-let logs=JSON.parse(localStorage.getItem("ld2Logs")||"[]");
-let history=JSON.parse(localStorage.getItem("ldDueHistory")||"[]");
-let soundOn=JSON.parse(localStorage.getItem("ldSoundOn")??"true");
-let vibeOn=JSON.parse(localStorage.getItem("ldVibeOn")??"true");
+let roomRates=JSON.parse(localStorage.getItem('ldPreview11_rates')||'{}');
+let rateRoom='Room 1';
+const historyOpenByRoom={};
+function saveRate(){roomRates[rateRoom]=Math.max(0,Number(document.getElementById('pitRate').value)||0);localStorage.setItem('ldPreview11_rates',JSON.stringify(roomRates))}
+function stampBolus(){log('Pitocin Bolus','');render()}
+function providerStamp(step){providerEvent('Anesthesia — '+step)}
+function timeToday(value,now){
+ if(!value)return now;
+ if(!/^[0-9]{2}:[0-9]{2}$/.test(value))return NaN;
+ const [hours,minutes]=value.split(':').map(Number);
+ if(hours>23||minutes>59)return NaN;
+ const date=new Date(now);date.setHours(hours,minutes,0,0);return date.getTime();
+}
+function providerEvent(action,withNote=false){
+ const input=document.getElementById('providerEventAt'),now=Date.now();
+ const eventAt=timeToday(input.value,now);
+ if(!Number.isFinite(eventAt)||eventAt>now){alert('Enter the actual event time, at or before now, or leave it blank to use now.');return}
+ const note=withNote?prompt(action+' — optional note (no names/PHI):',''):'';
+ if(note===null)return;
+ const label=[note.trim(),input.value?'Entered at '+fmt(now):''].filter(Boolean).join(' • ');
+ logs.unshift({ts:eventAt,recordedAt:now,patient:patient(),action,label});logs=logs.slice(0,150);
+ input.value='';save();render();
+}
+function recordVoid(n){
+ const input=document.getElementById('voidAmount'+n),raw=input.value.trim();
+ const amount=Number(raw);
+ if(raw!==''&&(!Number.isFinite(amount)||amount<0)){alert('Enter an amount of 0 mL or more, or leave it blank.');return}
+ log('Void '+n,raw===''?'Amount not recorded':amount+' mL');input.value='';render();
+}
+function painMed(route){
+ const mins=Number(document.getElementById(route==='PO'?'poMinutes':'ivMinutes').value);
+ if(!Number.isInteger(mins)||mins<1){alert('Enter a whole reassessment interval of at least 1 minute.');return}
+ const now=Date.now(),p=patient(),timeInput=document.getElementById(route==='PO'?'poGivenAt':'ivGivenAt');
+ const givenAt=timeToday(timeInput.value,now);
+ if(!Number.isFinite(givenAt)||givenAt>now){alert('Enter the actual time given, at or before now, or leave it blank to use now.');return}
+ const t={id:now+Math.random(),patient:p,label:route+' pain reassessment',start:givenAt,interval:mins*60000,count:1,done:0,stopped:false,snoozeUntil:null};
+ timers.push(t);ensureHistory(t);
+ logs.unshift({ts:givenAt,recordedAt:now,patient:p,action:route+' Med Given',label:'Pain reassessment preset: '+mins+' minutes'+(timeInput.value?' • Entered at '+fmt(now):'')});
+ logs=logs.slice(0,150);timeInput.value='';save();render();checkDueAlerts();
+}
+function bundlesFor(active){
+ const groups=[];
+ [...active].sort((a,b)=>nextFor(a)-nextFor(b)).forEach(t=>{
+  const last=groups[groups.length-1];
+  if(last&&!t.cordDelay&&!last[0].cordDelay&&nextFor(t)-nextFor(last[0])<=120000)last.push(t);else groups.push([t]);
+ });return groups;
+}
+function doneBundle(ids){ids.forEach(id=>{const t=timers.find(t=>t.id===id);if(t&&!t.stopped&&t.patient===patient())markDone(id)});render()}
+function esc(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+let timers=JSON.parse(localStorage.getItem("ldPreview11_2Timers")||"[]");
+let logs=JSON.parse(localStorage.getItem("ldPreview11_2Logs")||"[]");
+let history=JSON.parse(localStorage.getItem("ldPreview11_DueHistory")||"[]");
+let soundOn=JSON.parse(localStorage.getItem("ldPreview11_SoundOn")??"true");
+let vibeOn=JSON.parse(localStorage.getItem("ldPreview11_VibeOn")??"true");
 let alerted={};
 const patient=()=>document.getElementById("patient").value;
 const z=n=>String(n).padStart(2,"0");
 function localDT(d=new Date()){return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
-function fmt(ms){return new Date(ms).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}
+function fmt(ms){const d=new Date(ms);return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})+' ('+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hourCycle:'h23'})+')'}
 function save(){
- localStorage.setItem("ld2Timers",JSON.stringify(timers));
- localStorage.setItem("ld2Logs",JSON.stringify(logs));
- localStorage.setItem("ldDueHistory",JSON.stringify(history));
- localStorage.setItem("ldSoundOn",JSON.stringify(soundOn));
- localStorage.setItem("ldVibeOn",JSON.stringify(vibeOn));
+ localStorage.setItem("ldPreview11_2Timers",JSON.stringify(timers));
+ localStorage.setItem("ldPreview11_2Logs",JSON.stringify(logs));
+ localStorage.setItem("ldPreview11_DueHistory",JSON.stringify(history));
+ localStorage.setItem("ldPreview11_SoundOn",JSON.stringify(soundOn));
+ localStorage.setItem("ldPreview11_VibeOn",JSON.stringify(vibeOn));
 }
 function log(action,label,p=patient()){logs.unshift({ts:Date.now(),patient:p,action,label});logs=logs.slice(0,150);save()}
 function openPreset(label,mins,count){
@@ -210,38 +259,53 @@ function openPreset(label,mins,count){
 function closeModal(){modal.classList.remove("show")}
 function addTimer(){
  const st=new Date(start.value).getTime(), mins=Math.max(1,+interval.value), c=Math.max(0,+document.getElementById("count").value);
- if(!st){alert("Choose a start time.");return}
+ if(!Number.isFinite(st)||!Number.isFinite(mins)||!Number.isInteger(c)||c<0){alert("Choose a valid start time, interval, and whole number of checks.");return}
  const nt={id:Date.now()+Math.random(),patient:patient(),label:currentLabel,start:st,interval:mins*60000,count:c,done:0,stopped:false,snoozeUntil:null};
  timers.push(nt);ensureHistory(nt);
  log("Started",currentLabel);closeModal();render()
 }
 function scheduledFor(t){return t.start+t.interval*(t.done+1)}
+function nextFor(t){return t.snoozeUntil||scheduledFor(t)}
 function ensureHistory(t){
- const now=Date.now(),max=t.count||Math.max(1,Math.floor((now-t.start)/t.interval)+1);
- for(let i=1;i<=max;i++){
-  const due=t.start+t.interval*i;
-  if(!t.count&&due>now+t.interval)break;
-  if(!history.some(h=>h.timerId===t.id&&h.due===due))history.push({id:Date.now()+Math.random(),timerId:t.id,patient:t.patient,label:t.label,due,status:"Due",completedAt:null});
+ const due=scheduledFor(t);
+ let h=history.find(x=>x.timerId===t.id&&x.due===due);
+ if(!h){
+  h={id:Date.now()+Math.random(),timerId:t.id,patient:t.patient,label:t.label,due:due,status:"Due",completedAt:null};
+  history.push(h);save();
  }
- return history.filter(h=>h.timerId===t.id&&h.status==="Due").sort((a,b)=>a.due-b.due)[0];
+ return h;
 }
-function nextFor(t){const h=ensureHistory(t);return h?h.due:Infinity}
-function markDue(id){const h=history.find(x=>x.id===id);if(!h||h.status!=="Due")return;h.status="Acknowledged";h.completedAt=Date.now();const t=timers.find(x=>x.id===h.timerId);if(t)t.done++;save();render()}
-function markBundle(ids){ids.forEach(id=>{const h=history.find(x=>x.id===id);if(h&&h.status==="Due"){h.status="Acknowledged";h.completedAt=Date.now();const t=timers.find(x=>x.id===h.timerId);if(t)t.done++}});save();render()}
-function markDone(id){const h=history.filter(x=>x.timerId===id&&x.status==="Due").sort((a,b)=>a.due-b.due)[0];if(h)markDue(h.id)}
+function markDone(id){
+ const t=timers.find(x=>x.id===id);if(!t)return;
+ if(t.cordDelay&&Date.now()<scheduledFor(t))return;
+ const h=ensureHistory(t);h.status=t.cordDelay?"Acknowledged":"Completed";h.completedAt=Date.now();
+ log("Completed",t.label,t.patient);t.done++;t.snoozeUntil=null;
+ if(t.count>0&&t.done>=t.count){t.stopped=true;log("Series complete",t.label,t.patient)}
+ else ensureHistory(t);
+ save();render()
+}
 function snooze(id){
  const t=timers.find(x=>x.id===id);if(!t)return;t.snoozeUntil=Date.now()+5*60000;log("Snoozed 5 min",t.label,t.patient);save();render()
 }
-function notNeeded(id){const h=history.filter(x=>x.timerId===id&&x.status==="Due").sort((a,b)=>a.due-b.due)[0];if(h){h.status="N/A";h.completedAt=Date.now();save();render()}}
+function notNeeded(id){
+ const t=timers.find(x=>x.id===id);if(!t)return;
+ const h=ensureHistory(t);h.status="N/A";h.completedAt=Date.now();
+ log("Marked not needed",t.label,t.patient);t.done++;t.snoozeUntil=null;
+ if(t.count>0&&t.done>=t.count)t.stopped=true;else ensureHistory(t);
+ save();render()
+}
 function stopTimer(id){
  const t=timers.find(x=>x.id===id);if(!t)return;t.stopped=true;log("Stopped",t.label,t.patient);save();render()
 }
 function delivered(){
  const p=patient(), now=Date.now();
- if(!confirm(`Start postpartum recovery for ${p} now?`))return;
+ if(!confirm(`Start the 1-minute cord delay and postpartum recovery for ${p} now?`))return;
  timers.filter(t=>t.patient===p&&!t.stopped).forEach(t=>t.stopped=true);
  const pp={id:Date.now()+Math.random(),patient:p,label:"Postpartum recovery check",start:now,interval:30*60000,count:4,done:0,stopped:false,snoozeUntil:null};
  timers.push(pp);ensureHistory(pp);
+ const cord={id:now+Math.random(),patient:p,label:'Cord delay — 1 minute',start:now,interval:60000,count:1,done:0,stopped:false,snoozeUntil:null,cordDelay:true};
+ timers.push(cord);ensureHistory(cord);armCordAudio();
+ log('Started','Cord delay — 1 minute',p);
  log("DELIVERED — postpartum recovery started","q30 min × 4",p);save();render()
 }
 function clearLog(){
@@ -253,15 +317,6 @@ function clearLog(){
  }
 }
 
-function providerVisit(role,direction){
- const label=`${role} ${direction}`;
- const note=prompt(`${label} — optional note (no names/PHI):`,` `);
- if(note===null)return;
- logs.unshift({ts:Date.now(),patient:patient(),action:label,label:(note.trim()||"")});
- save();render();
-}
-function stampBolus(){logs.unshift({ts:Date.now(),patient:patient(),action:"Pitocin Bolus",label:""});save();render()}
-function painGiven(route,defaultMins){const raw=prompt(`${route} pain reassessment interval in minutes:`,String(defaultMins));if(raw===null)return;const mins=Number(raw);if(!Number.isFinite(mins)||mins<1){alert("Enter a valid interval.");return}const now=Date.now();timers.push({id:now+Math.random(),patient:patient(),label:`Pain reassessment (${route})`,start:now,interval:mins*60000,count:1,done:0,stopped:false,snoozeUntil:null});logs.unshift({ts:now,patient:patient(),action:`${route} pain medication given`,label:`Reassess in ${mins} minutes`});save();render()}
 function quickEvent(label){
  const note=prompt(`${label} — optional note:`,` `);
  if(note===null)return;
@@ -271,14 +326,16 @@ function quickEvent(label){
 function pitChange(delta){
  const el=document.getElementById("pitRate");
  let old=Math.max(0,Number(el.value)||0), next=Math.max(0,old+delta);
- const note="";
- el.value=next;
+ const note=prompt(`Pitocin ${old} → ${next} mU/min\nOptional note:`,` `);
+ if(note===null)return;
+ el.value=next;saveRate();
  logs.unshift({ts:Date.now(),patient:patient(),action:`Pitocin ${old} → ${next} mU/min`,label:(note.trim()||"")});
  save();render();
 }
 function pitStatus(status){
  const rate=Math.max(0,Number(document.getElementById("pitRate").value)||0);
- const note="";
+ const note=prompt(`Pitocin ${status} at ${rate} mU/min\nOptional note:`,` `);
+ if(note===null)return;
  logs.unshift({ts:Date.now(),patient:patient(),action:`Pitocin ${status} — ${rate} mU/min`,label:(note.trim()||"")});
  save();render();
 }
@@ -295,19 +352,24 @@ function updateAlertButtons(){
  if(s)s.textContent=`🔊 Sound: ${soundOn?"ON":"OFF"}`;
  if(v)v.textContent=`📳 Vibrate: ${vibeOn?"ON":"OFF"}`;
 }
+let cordAudio=null;
+function armCordAudio(){
+ if(!soundOn)return;
+ try{const A=window.AudioContext||window.webkitAudioContext;cordAudio=cordAudio||new A();if(cordAudio.state==='suspended')cordAudio.resume().catch(()=>{});}catch(e){}
+}
 function beep(){
  if(!soundOn)return;
  try{
-  const A=window.AudioContext||window.webkitAudioContext,ctx=new A(),o=ctx.createOscillator(),g=ctx.createGain();
+  const A=window.AudioContext||window.webkitAudioContext,ctx=cordAudio||new A(),o=ctx.createOscillator(),g=ctx.createGain();
   o.connect(g);g.connect(ctx.destination);o.frequency.value=880;g.gain.value=.12;o.start();
-  setTimeout(()=>{o.stop();ctx.close()},500);
+  setTimeout(()=>{o.stop();o.disconnect();g.disconnect();if(ctx!==cordAudio)ctx.close()},500);
  }catch(e){}
 }
 function testAlert(){beep();if(vibeOn&&navigator.vibrate)navigator.vibrate([250,120,250])}
 function checkDueAlerts(){
  const now=Date.now();
  timers.filter(t=>!t.stopped).forEach(t=>{
-  const due=nextFor(t),key=t.id+"-"+due;
+  const due=nextFor(t),key=t.id+"-"+scheduledFor(t);
   if(now>=due && !alerted[key]){
    alerted[key]=true;beep();
    if(vibeOn&&navigator.vibrate)navigator.vibrate([250,120,250]);
@@ -320,18 +382,53 @@ function countdown(ms){
  const m=Math.floor(d/60000),s=Math.floor((d%60000)/1000);return `${m}:${String(s).padStart(2,"0")}`
 }
 function render(){
- const p=patient(),now=Date.now(),active=timers.filter(t=>t.patient===p&&!t.stopped);
+ if(rateRoom!==patient()){saveRate();rateRoom=patient();document.getElementById("pitRate").value=roomRates[rateRoom]||0;[1,2,3].forEach(n=>document.getElementById('voidAmount'+n).value='');['poGivenAt','ivGivenAt','providerEventAt'].forEach(id=>document.getElementById(id).value='');}
+ [1,2,3].forEach(n=>{const entry=logs.find(x=>x.patient===patient()&&x.action==='Void '+n);document.getElementById('voidStatus'+n).textContent=entry?fmt(entry.ts)+' • '+entry.label:'';});
+ const p=patient(), active=timers.filter(t=>t.patient===p&&!t.stopped).sort((a,b)=>nextFor(a)-nextFor(b)), now=Date.now();
+ hero.innerHTML=active.length?`<div class="hero"><div class="label">NEXT FOR ${p.toUpperCase()}</div><div class="clock">${active[0].cordDelay&&now>=scheduledFor(active[0])?"1 minute complete":countdown(nextFor(active[0]))}</div><div class="task">${fmt(nextFor(active[0]))} • ${esc(bundlesFor(active)[0].map(t=>t.label).join(" + "))}</div></div>`:`<div class="empty">No active timers for ${p}.</div>`;
+ const eventRow=t=>{
+ if(t.cordDelay){
+  const complete=now>=scheduledFor(t);
+  return '<div class="event '+(complete?'due':'')+'" role="status"><div><div class="time">'+(complete?'✓ 1 minute complete':countdown(scheduledFor(t)))+'</div><b>Cord delay — 1 minute</b><div class="meta">'+t.patient+' • Started '+fmt(t.start)+' • Completes '+fmt(scheduledFor(t))+'</div></div><div class="actions"><button class="primary" '+(complete?'':'disabled')+' onclick="markDone('+t.id+')">Acknowledge</button><button class="danger" onclick="stopTimer('+t.id+')">Stop</button></div></div>';
+ }
+
+  const due=nextFor(t),d=due-now,cls=d<0?"late":d<10*60000?"due":"",status=d<0?`${Math.ceil(-d/60000)} min overdue`:d<60000?"due now":`in ${Math.ceil(d/60000)} min`;
+  return `<div class="event ${cls}"><div><div class="time">${fmt(due)}</div><div><span class="badge">${t.patient}</span><b>${esc(t.label)}</b></div><div class="meta">${status} • Original due: ${fmt(scheduledFor(t))} • ${t.count?t.done+"/"+t.count+" completed":t.done+" completed • ongoing"}</div></div><div class="actions"><button class="primary" onclick="markDone(${t.id})">DONE</button><button onclick="snooze(${t.id})">+5</button><button onclick="notNeeded(${t.id})">N/A</button><button class="danger" onclick="stopTimer(${t.id})">Stop</button></div></div>`
+ };
+ events.innerHTML=active.length?bundlesFor(active).map(group=>group.length===1?eventRow(group[0]):`<div class="bundle-items"><div class="row" style="margin-top:12px"><div class="grow bundle-title">📋 Documentation bundle · ${group.length} reminders<div class="tiny">Earliest due: ${fmt(nextFor(group[0]))}</div></div><button class="primary" onclick='doneBundle(${JSON.stringify(group.map(t=>t.id))})'>DONE BUNDLE</button></div>${group.map(eventRow).join('')}</div>`).join(''):`<div class="empty">Start a workflow above.</div>`;
  active.forEach(t=>ensureHistory(t));
- const pending=history.filter(h=>h.patient===p&&h.status==="Due"&&active.some(t=>t.id===h.timerId)).sort((a,b)=>a.due-b.due);
- const due=pending.filter(h=>h.due<=now),future=pending.find(h=>h.due>now);
- hero.innerHTML=due.length?`<div class="hero"><div class="label">${p.toUpperCase()} • DUE / UNACKNOWLEDGED</div><div class="clock">${due.length} reminder(s)</div><div class="task">Next upcoming: ${future?fmt(future.due):"None"}</div></div>`:future?`<div class="hero"><div class="label">NEXT FOR ${p.toUpperCase()}</div><div class="clock">${countdown(future.due)}</div><div class="task">${fmt(future.due)} • ${future.label}</div></div>`:`<div class="empty">No pending reminders for ${p}.</div>`;
- const groups=[];due.forEach(h=>{let g=groups[groups.length-1];if(!g||h.due-g[0].due>120000)groups.push([h]);else g.push(h)});
- events.innerHTML=groups.length?groups.map(g=>{const ids=g.map(h=>h.id);return `<div class="event late"><div><div class="time">${fmt(g[0].due)} • ${g.length>1?"Documentation bundle":"Reminder"}</div>${g.map(h=>`<div><b>${h.label}</b> <span class="meta">(${fmt(h.due)} due)</span> <button onclick="markDue(${h.id})">DONE</button></div>`).join("")}<div class="meta">Overdue means not acknowledged in this app, not proof care was missed.</div></div>${g.length>1?`<div class="actions"><button class="primary" onclick='markBundle(${JSON.stringify(ids)})'>DONE ALL</button></div>`:""}</div>`}).join(""):future?`<div class="empty">Nothing due yet. Next: ${fmt(future.due)} — ${future.label}</div>`:`<div class="empty">Start a workflow above.</div>`;
- const histHTML=history.filter(h=>h.patient===p).sort((a,b)=>a.due-b.due).slice(-100).map(h=>`<div class="log"><b>${fmt(h.due)}</b> due • ${h.label}<br><span class="meta">${h.status==="Due"&&h.due<now?"Overdue / unacknowledged":h.status}${h.completedAt?` • Marked at ${fmt(h.completedAt)}`:""}</span></div>`).join("");
- const eventHTML=logs.filter(x=>x.patient===p).slice(0,40).map(x=>`<div class="log"><b>${fmt(x.ts)}</b> • ${x.action}${x.label?`<br><span class="meta">${x.label}</span>`:""}</div>`).join("");
- document.getElementById("log").innerHTML=histHTML+eventHTML||'<div class="empty">No history yet.</div>';
+
+ const categoryFor=(x,isReminder)=>{
+  const action=x.action||'',label=x.label||'';
+  if(!isReminder&&action==='Note')return '📝 Notes';
+  const name=isReminder?label:action;
+  if(/^(Foley|Void [123])/.test(name))return '🚽 Foley / Voids';
+  if(/^(Provider|Doctor|Dr Called|Anesthesia)/.test(name))return '👩‍⚕️ Provider Visits';
+  // Timer actions carry their workflow name in the label.
+  const workflow=isReminder||/^(Started|Completed|Series complete|Snoozed 5 min|Marked not needed|Stopped)$/.test(action)?label:action;
+  if(/^Pitocin/.test(workflow))return '💉 Pitocin';
+  if(/^(PO |IV )/.test(workflow))return '💊 Pain Meds';
+  if(/^(Postpartum|DELIVERED|Cord delay)/.test(workflow))return '💗 Postpartum Recovery';
+  return '📋 Other Workflow Reminders';
+ };
+ const categories=['🚽 Foley / Voids','👩‍⚕️ Provider Visits','💉 Pitocin','💊 Pain Meds','💗 Postpartum Recovery','📋 Other Workflow Reminders','📝 Notes'];
+ const historyContainer=document.getElementById('log');
+ if(historyContainer.querySelectorAll){historyContainer.querySelectorAll('details[data-history-category]').forEach(el=>{historyOpenByRoom[el.dataset.historyRoom+'|'+el.dataset.historyCategory]=el.open;});}
+ const entries=[...history.filter(x=>x.patient===p).map(x=>({x,reminder:true,time:x.due})),...logs.filter(x=>x.patient===p).map(x=>({x,reminder:false,time:x.ts}))];
+ document.getElementById('log').innerHTML=entries.length?categories.map(category=>{
+  const rows=entries.filter(e=>categoryFor(e.x,e.reminder)===category).sort((a,b)=>b.time-a.time);
+  if(!rows.length)return '';
+  const index=categories.indexOf(category),expanded=historyOpenByRoom[p+'|'+index]?' open':'';
+  return '<details data-history-category="'+index+'" data-history-room="'+p+'"'+expanded+' style="margin-top:9px;border:1px solid var(--line);border-radius:13px;padding:11px"><summary style="cursor:pointer;font-size:15px;font-weight:750;color:var(--rose)">'+category+' <span class="badge">'+rows.length+'</span></summary>'+rows.map(({x,reminder})=>{
+   if(!reminder)return '<div class="log"><b>'+fmt(x.ts)+'</b> • '+esc(x.action)+(x.label?'<br><span class="meta">'+esc(x.label)+'</span>':'')+'</div>';
+   const status=x.status==='Due'&&now>=x.due?(x.label==='Cord delay — 1 minute'?'1 minute complete':'MISSED / OVERDUE'):x.status;
+   const actual=x.completedAt?' • Recorded at <b>'+fmt(x.completedAt)+'</b>':'';
+   return '<div class="log"><b>'+fmt(x.due)+'</b> due • '+esc(x.label)+'<br><span class="meta">'+esc(status)+actual+'</span></div>';
+  }).join('')+'</details>';
+ }).join(''):'<div class="empty">No due-time history yet.</div>';
  updateAlertButtons();
 }
+document.getElementById("pitRate").value=roomRates[rateRoom]||0;
 render();setInterval(()=>{render();checkDueAlerts()},1000);
 </script>
 </body></html>
